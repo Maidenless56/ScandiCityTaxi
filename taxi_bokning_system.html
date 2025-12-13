@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taxi Bokningssystem</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script>
+        
+        const API_KEY = 'AIzaSyCI3lE_xCB76Z889muJXIAx01TPiZeVC-o';
+
+        let step = 1;
+        let fromAddress = '';
+        let toAddress = '';
+        let fromCoords = null;
+        let toCoords = null;
+        let map = null;
+        let directionsRenderer = null;
+        let fromAutocomplete = null;
+        let toAutocomplete = null;
+
+        // Ladda Google Maps
+        function loadGoogleMaps() {
+            if (window.google) return;
+            
+            const script = document.createElement('script');
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${API_KEY}&libraries=places&callback=initAutocomplete`;
+            script.async = true;
+            script.defer = true;
+            document.head.appendChild(script);
+        }
+
+        function initAutocomplete() {
+            console.log('Google Maps loaded!');
+            
+            setTimeout(() => {
+                const fromInput = document.getElementById('from-input');
+                const toInput = document.getElementById('to-input');
+
+                if (!fromInput || !toInput) {
+                    console.error('Inputs not found');
+                    return;
+                }
+
+                fromAutocomplete = new google.maps.places.Autocomplete(fromInput, {
+                    componentRestrictions: { country: 'se' },
+                    fields: ['formatted_address', 'geometry'],
+                });
+
+                toAutocomplete = new google.maps.places.Autocomplete(toInput, {
+                    componentRestrictions: { country: 'se' },
+                    fields: ['formatted_address', 'geometry'],
+                });
+
+                fromAutocomplete.addListener('place_changed', () => {
+                    const place = fromAutocomplete.getPlace();
+                    if (place.geometry) {
+                        fromAddress = place.formatted_address;
+                        fromCoords = {
+                            lat: place.geometry.location.lat(),
+                            lng: place.geometry.location.lng(),
+                        };
+                        console.log('From:', fromAddress, fromCoords);
+                    }
+                });
+
+                toAutocomplete.addListener('place_changed', () => {
+                    const place = toAutocomplete.getPlace();
+                    if (place.geometry) {
+                        toAddress = place.formatted_address;
+                        toCoords = {
+                            lat: place.geometry.location.lat(),
+                            lng: place.geometry.location.lng(),
+                        };
+                        console.log('To:', toAddress, toCoords);
+                    }
+                });
+            }, 500);
+        }
+
+        function showRoute() {
+            console.log('Show route clicked');
+            console.log('From:', fromAddress, fromCoords);
+            console.log('To:', toAddress, toCoords);
+
+            if (!fromAddress || !toAddress || !fromCoords || !toCoords) {
+                alert('Vänligen välj adresser från förslagen i listan!');
+                return;
+            }
+            
+            step = 2;
+            render();
+            setTimeout(initMap, 300);
+        }
+
+        function initMap() {
+            console.log('Initializing map...');
+            
+            const mapElement = document.getElementById('map');
+            if (!mapElement) {
+                console.error('Map element not found');
+                return;
+            }
+
+            map = new google.maps.Map(mapElement, {
+                zoom: 7,
+                center: { lat: 59.3293, lng: 18.0686 },
+                mapTypeControl: false,
+                fullscreenControl: false,
+                streetViewControl: false,
+            });
+
+            directionsRenderer = new google.maps.DirectionsRenderer({
+                map: map,
+                suppressMarkers: false,
+            });
+
+            calculateRoute();
+        }
+
+        function calculateRoute() {
+            console.log('Calculating route...');
+            
+            const directionsService = new google.maps.DirectionsService();
+
+            directionsService.route(
+                {
+                    origin: fromCoords,
+                    destination: toCoords,
+                    travelMode: google.maps.TravelMode.DRIVING,
+                },
+                (result, status) => {
+                    console.log('Route status:', status);
+                    
+                    if (status === 'OK') {
+                        directionsRenderer.setDirections(result);
+                        const route = result.routes[0];
+                        const leg = route.legs[0];
+                        
+                        document.getElementById('distance').textContent = leg.distance.text;
+                        document.getElementById('duration').textContent = leg.duration.text;
+                        document.getElementById('route-info').style.display = 'block';
+                        
+                        console.log('Distance:', leg.distance.text);
+                        console.log('Duration:', leg.duration.text);
+                    } else {
+                        console.error('Directions request failed:', status);
+                        alert('Kunde inte beräkna rutten. Fel: ' + status);
+                    }
+                }
+            );
+        }
+
+        function goBack() {
+            step = 1;
+            render();
+            setTimeout(() => {
+                if (window.google) {
+                    initAutocomplete();
+                }
+            }, 100);
+        }
+
+        function render() {
+            const root = document.getElementById('root');
+            
+            if (step === 1) {
+                root.innerHTML = `
+                    <div class="min-h-screen flex items-center justify-center bg-cover bg-center relative" 
+                         style="background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url(https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=1600)">
+                        <div class="w-full max-w-2xl mx-auto px-4">
+                            <h1 class="text-6xl font-bold text-white text-center mb-16 drop-shadow-2xl">
+                                Vart vill du åka?
+                            </h1>
+                            
+                            <div class="bg-white rounded-3xl shadow-2xl p-8 space-y-6">
+                                <div class="relative">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Från</label>
+                                    <div class="flex items-center border-2 border-gray-300 rounded-xl p-4 focus-within:border-blue-500 transition">
+                                        <svg class="w-6 h-6 text-blue-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                        </svg>
+                                        <input
+                                            id="from-input"
+                                            type="text"
+                                            class="flex-1 outline-none text-gray-800 text-lg"
+                                            placeholder="Skriv startadress..."
+                                        />
+                                    </div>
+                                </div>
+
+                                <div class="relative">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Till</label>
+                                    <div class="flex items-center border-2 border-gray-300 rounded-xl p-4 focus-within:border-blue-500 transition">
+                                        <svg class="w-6 h-6 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        </svg>
+                                        <input
+                                            id="to-input"
+                                            type="text"
+                                            class="flex-1 outline-none text-gray-800 text-lg"
+                                            placeholder="Skriv destinationsadress..."
+                                        />
+                                    </div>
+                                </div>
+
+                                <button
+                                    onclick="showRoute()"
+                                    class="w-full py-5 rounded-xl font-bold text-xl transition shadow-lg mt-8 bg-blue-600 text-white hover:bg-blue-700 hover:shadow-xl"
+                                >
+                                    Visa rutt
+                                </button>
+
+                                <div class="mt-6 p-4 bg-blue-50 rounded-xl">
+                                    <p class="text-sm text-gray-600 text-center">
+                                        💡 Börja skriva så får du adressförslag från Google Maps
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                loadGoogleMaps();
+                
+            } else {
+                root.innerHTML = `
+                    <div class="h-screen flex flex-col">
+                        <div class="bg-white shadow-lg z-10 p-4">
+                            <div class="container mx-auto">
+                                <button
+                                    onclick="goBack()"
+                                    class="text-blue-600 hover:text-blue-700 font-medium mb-4"
+                                >
+                                    ← Ändra adresser
+                                </button>
+                                
+                                <div class="grid md:grid-cols-3 gap-4">
+                                    <div class="bg-blue-50 rounded-xl p-4">
+                                        <p class="text-xs text-gray-500">Från</p>
+                                        <p class="font-semibold text-gray-800 text-sm">${fromAddress}</p>
+                                    </div>
+
+                                    <div class="bg-green-50 rounded-xl p-4">
+                                        <p class="text-xs text-gray-500">Till</p>
+                                        <p class="font-semibold text-gray-800 text-sm">${toAddress}</p>
+                                    </div>
+
+                                    <div class="bg-purple-50 rounded-xl p-4">
+                                        <p class="text-xs text-gray-500">Rutt info</p>
+                                        <p class="font-semibold text-gray-800 text-sm">Beräknar...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex-1 relative">
+                            <div id="map" class="w-full h-full"></div>
+                        </div>
+
+                        <div id="route-info" class="bg-white border-t shadow-lg p-6" style="display: none;">
+                            <div class="container mx-auto">
+                                <div class="flex items-center justify-between flex-wrap gap-4">
+                                    <div class="flex items-center space-x-8">
+                                        <div>
+                                            <p class="text-sm text-gray-500">Avstånd</p>
+                                            <p id="distance" class="text-2xl font-bold text-gray-800">-</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm text-gray-500">Restid</p>
+                                            <p id="duration" class="text-2xl font-bold text-blue-600">-</p>
+                                        </div>
+                                    </div>
+                                    <button class="bg-blue-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition shadow-lg">
+                                        Boka resa
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // Starta appen
+        render();
+    </script>
+</body>
+</html>
