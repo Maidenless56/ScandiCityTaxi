@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ScandiCityTaxi - Miljövänlig taxi med Tesla. Pålitlig service i Flen, Eskilstuna och Stockholm. Boka din resa idag!">
+    <title>ScandiCityTaxi - Miljövänlig Tesla Taxi i Sörmland</title>
+    <style>
+        /* ===== GRUNDLÄGGANDE STYLING ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            overflow-x: hidden;
+        }
+
+        /* ===== FÄRGSCHEMA ===== */
+        :root {
+            --primary: #0a0a0a;
+            --accent: #3b82f6;
+            --light: #f8fafc;
+            --white: #ffffff;
+            --text: #1a1a1a;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+        }
+
+        /* ===== NAVIGATION ===== */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.2rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            position: relative;
+            height: 50px;
+            width: 180px;
+            text-decoration: none;
+            display: block;
+            cursor: pointer;
+        }
+
+        /* Logo squares */
+        .logo-squares {
+            position: absolute;
+            width: 180px;
+            height: 50px;
+            top: 0;
+            left: 0;
+        }
+
+        .logo-sq {
+            width: 22px;
+            height: 22px;
+            background: #1e1e1e;
+            position: absolute;
+        }
+
+        .logo-sq-top-left { top: 0; left: 22px; }
+        .logo-sq-top-right { top: 0; left: 66px; }
+        .logo-sq-bottom-left { top: 22px; left: 0; }
+        .logo-sq-bottom-middle { top: 22px; left: 44px; }
+        .logo-sq-bottom-right { top: 22px; left: 88px; }
+
+        .logo-taxi {
+            font-size: 27px;
+            font-weight: 900;
+            letter-spacing: 2.5px;
+            color: #f5b600;
+            position: absolute;
+            top: 8px;
+            left: 19px;
+            margin: 0;
+            line-height: 1;
+        }
+
+        .logo-scandi {
+            letter-spacing: 7.5px;
+            font-size: 8px;
+            font-weight: 400;
+            color: #222;
+            position: absolute;
+            top: 49px;
+            left: 0px;
+            margin: 0;
+            line-height: 1;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent);
+        }
+
+        .nav-cta {
+            background: var(--accent);
+            color: white;
+            padding: 0.7rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .nav-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+            color: white;
+        }
+
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+        }
+
+        .menu-toggle span {
+            width: 25px;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 2px;
+            transition: 0.3s;
+        }
+
+        /* ===== HERO SEKTION ===== */
+        .hero {
+            margin-top: 76px;
+            height: 90vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(10, 10, 10, 0.7), rgba(59, 130, 246, 0.3)),
+                        url('tesla_v1.webp') center/cover;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            color: white;
+            max-width: 900px;
+            padding: 0 2rem;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
+            letter-spacing: -2px;
+        }
+
+        .hero p {
+            font-size: 1.4rem;
+            margin-bottom: 2.5rem;
+            opacity: 0.95;
+            font-weight: 400;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 1rem 2.5rem;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            border: 2px solid white;
+        }
+
+        .btn-secondary:hover {
+            background: transparent;
+            color: white;
+        }
+
+        .phone-display {
+            margin-top: 2rem;
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        /* ===== INFO BAR ===== */
+        .info-bar {
+            background: var(--primary);
+            color: white;
+            padding: 2rem 0;
+        }
+
+        .info-grid {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            text-align: center;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .info-item strong {
+            font-size: 1.1rem;
+            display: block;
+        }
+
+        .info-item span {
+            opacity: 0.8;
+            font-size: 0.95rem;
+        }
+
+        /* ===== SEKTION STYLING ===== */
+        section {
+            padding: 6rem 2rem;
+        }
+
+        .section-light {
+            background: var(--light);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-header h2 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            letter-spacing: -1px;
+        }
+
+        .section-header p {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* ===== TJÄNSTER ===== */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .service-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+
+        .service-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+            border-color: var(--accent);
+        }
+
+        .service-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .service-card p {
+            color: var(--text-light);
+            line-height: 1.7;
+        }
+
+        /* ===== FÖRDELAR ===== */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .feature-icon-box {
+            background: var(--light);
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            flex-shrink: 0;
+        }
+
+        .feature-content h4 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+
+        .feature-content p {
+            color: var(--text-light);
+            font-size: 0.95rem;
+        }
+
+        /* ===== KONTAKT ===== */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .contact-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 16px;
+            text-align: center;
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+
+        .contact-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+        }
+
+        .contact-card-icon {
+            background: var(--light);
+            width: 80px;
+            height: 80px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin: 0 auto 1.5rem;
+            font-weight: 600;
+        }
+
+        .contact-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .contact-card a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.2rem;
+            transition: color 0.3s;
+        }
+
+        .contact-card a:hover {
+            color: var(--primary);
+        }
+
+        .contact-card p {
+            color: var(--text-light);
+            margin-top: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            background: var(--primary);
+            color: white;
+            padding: 3rem 2rem 1.5rem;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h4 {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent);
+        }
+
+        .footer-section p,
+        .footer-section a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            display: block;
+            margin-bottom: 0.8rem;
+            transition: color 0.3s;
+            font-size: 0.95rem;
+        }
+
+        .footer-section a:hover {
+            color: var(--accent);
+        }
+
+        .footer-bottom {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+        }
+
+        /* ===== MOBILANPASSNING ===== */
+        @media (max-width: 968px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: white;
+                flex-direction: column;
+                padding: 2rem;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                gap: 1.5rem;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .menu-toggle {
+                display: flex;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1.1rem;
+            }
+
+            .phone-display {
+                font-size: 1.5rem;
+            }
+
+            .section-header h2 {
+                font-size: 2rem;
+            }
+
+            section {
+                padding: 4rem 1.5rem;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body>
+    <!-- ===== NAVIGATION ===== -->
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <div class="logo-squares">
+                    <div class="logo-sq logo-sq-top-left"></div>
+                    <div class="logo-sq logo-sq-top-right"></div>
+                    <div class="logo-sq logo-sq-bottom-left"></div>
+                    <div class="logo-sq logo-sq-bottom-middle"></div>
+                    <div class="logo-sq logo-sq-bottom-right"></div>
+                </div>
+                <h1 class="logo-taxi">TAXI</h1>
+                <h2 class="logo-scandi">SCANDICITY</h2>
+            </a>
+            
+            <div class="menu-toggle" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html">Hem</a></li>
+                <li><a href="#tjanster">Tjänster</a></li>
+                <li><a href="priser.html">Priser</a></li>
+                <li><a href="#om-oss">Om Oss</a></li>
+                <li><a href="#kontakt">Kontakt</a></li>
+                <li><a href="boka.html" class="nav-cta">Boka Nu</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="hero" id="hem">
+        <div class="hero-bg"></div>
+        <div class="hero-content">
+            <h1>Miljövänlig Tesla Taxi i Sörmland</h1>
+            <p>Bekvämt, hållbart och professionellt. Din pålitliga partner för alla resor.</p>
+            <div class="hero-buttons">
+                <a href="tel:0737726069" class="btn btn-primary">Ring Nu</a>
+                <a href="boka.html" class="btn btn-secondary">Boka Online</a>
+            </div>
+            <div class="phone-display">073-772 60 69</div>
+        </div>
+    </section>
+
+    <div class="info-bar">
+        <div class="info-grid">
+            <div class="info-item">
+                <strong>100% Elektrisk</strong>
+                <span>Tesla Model Y</span>
+            </div>
+            <div class="info-item">
+                <strong>24/7 Service</strong>
+                <span>Alltid tillgänglig</span>
+            </div>
+            <div class="info-item">
+                <strong>Flygplatstransport</strong>
+                <span>Arlanda, Bromma, Skavsta</span>
+            </div>
+            <div class="info-item">
+                <strong>Alla Betalningar</strong>
+                <span>Swish, kort & kontant</span>
+            </div>
+        </div>
+    </div>
+
+    <section id="tjanster">
+        <div class="container">
+            <div class="section-header">
+                <h2>Våra Tjänster</h2>
+                <p>Professionella transportlösningar för alla dina behov</p>
+            </div>
+
+            <div class="services-grid">
+                <div class="service-card">
+                    <h3>Flygplatstransporter</h3>
+                    <p>Bekväm och punktlig transport till och från Arlanda, Bromma och Skavsta. Vi möter dig vid ankomst och hjälper till med bagaget.</p>
+                </div>
+
+                <div class="service-card">
+                    <h3>Företagskörningar</h3>
+                    <p>Skräddarsydda lösningar för företag med fakturering, fast månadspris och dedikerad service för möten och konferenser.</p>
+                </div>
+
+                <div class="service-card">
+                    <h3>Sjukvårdstransporter</h3>
+                    <p>Trygga och omtänksamma transporter till läkarbesök, vårdcentraler och sjukhus. Vi tar hand om dig hela vägen.</p>
+                </div>
+
+                <div class="service-card">
+                    <h3>Event & Festtransporter</h3>
+                    <p>Perfekt för bröllop, fester och speciella tillfällen. Anländ i stil med vår exklusiva Tesla.</p>
+                </div>
+
+                <div class="service-card">
+                    <h3>Kommunkontrakt</h3>
+                    <p>Vi samarbetar med kommuner för skolskjuts, omvårdnadstransporter och andra upphandlade tjänster.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="om-oss">
+        <div class="container">
+            <div class="section-header">
+                <h2>Varför Välja ScandiCityTaxi?</h2>
+                <p>Vi sätter alltid dig och miljön i fokus</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-item">
+                    <div class="feature-icon-box">⚡</div>
+                    <div class="feature-content">
+                        <h4>100% Elektrisk Tesla</h4>
+                        <p>Miljövänlig körning utan kompromisser på komfort. Tyst, smidig och hållbar.</p>
+                    </div>
+                </div>
+
+                <div class="feature-item">
+                    <div class="feature-icon-box">+</div>
+                    <div class="feature-content">
+                        <h4>Premium Komfort</h4>
+                        <p>Bekväma säten, rymlig interiör och modern utrustning för den bästa resan.</p>
+                    </div>
+                </div>
+
+                <div class="feature-item">
+                    <div class="feature-icon-box">⏱</div>
+                    <div class="feature-content">
+                        <h4>Alltid Punktlig</h4>
+                        <p>Vi värdesätter din tid. Kommer alltid i tid och kör effektivt till ditt mål.</p>
+                    </div>
+                </div>
+
+                <div class="feature-item">
+                    <div class="feature-icon-box">✓</div>
+                    <div class="feature-content">
+                        <h4>Trygg & Säker</h4>
+                        <p>Certifierad taxiförare med lång erfarenhet och fullständig försäkring.</p>
+                    </div>
+                </div>
+
+                <div class="feature-item">
+                    <div class="feature-icon-box">kr</div>
+                    <div class="feature-content">
+                        <h4>Transparenta Priser</h4>
+                        <p>Inga dolda avgifter. Du vet alltid vad resan kostar innan du bokar.</p>
+                    </div>
+                </div>
+
+                <div class="feature-item">
+                    <div class="feature-icon-box">📍</div>
+                    <div class="feature-content">
+                        <h4>Lokal Kunskap</h4>
+                        <p>Känner alla genvägar i Flen, Eskilstuna och hela Sörmland.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="kontakt" class="section-light">
+        <div class="container">
+            <div class="section-header">
+                <h2>Kontakta Oss</h2>
+                <p>Vi finns här för dig - hör av dig när du vill</p>
+            </div>
+
+            <div class="contact-grid">
+                <div class="contact-card">
+                    <div class="contact-card-icon">Tel</div>
+                    <h3>Telefon</h3>
+                    <a href="tel:0737726069">073-772 60 69</a>
+                    <p>Vardagar 06:00 - 24:00<br>Helger 00:00 - 24:00</p>
+                </div>
+
+                <div class="contact-card">
+                    <div class="contact-card-icon">@</div>
+                    <h3>E-post</h3>
+                    <a href="mailto:scandicityaxi@gmail.com">scandicityaxi@gmail.com</a>
+                    <p>Svarar inom 24 timmar</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>ScandiCityTaxi</h4>
+                <p>Din pålitliga partner för alla transporter i Sörmland. 100% elektrisk och miljövänlig.</p>
+                <p style="margin-top: 1rem;">
+                    <strong>Org.nr:</strong> XXXXXX-XXXX<br>
+                    <strong>F-skattsedel:</strong> Ja
+                </p>
+            </div>
+
+            <div class="footer-section">
+                <h4>Snabblänkar</h4>
+                <a href="#tjanster">Våra Tjänster</a>
+                <a href="priser.html">Priser</a>
+                <a href="boka.html">Boka Resa</a>
+                <a href="#kontakt">Kontakt</a>
+            </div>
+
+            <div class="footer-section">
+                <h4>Täckningsområde</h4>
+                <p>Flen</p>
+                <p>Eskilstuna</p>
+                <p>Stockholm</p>
+                <p>Katrineholm</p>
+                <p>Arlanda Flygplats</p>
+                <p>Hela Sörmland</p>
+            </div>
+
+            <div class="footer-section">
+                <h4>Kontakt</h4>
+                <p><strong>Tel:</strong> <a href="tel:0737726069">073-772 60 69</a></p>
+                <p><strong>E-post:</strong> <a href="mailto:scandicityaxi@gmail.com">scandicityaxi@gmail.com</a></p>
+                <p><strong>Adress:</strong><br>Flen, Sörmland</p>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2025 ScandiCityTaxi. Alla rättigheter förbehållna.</p>
+            <p style="margin-top: 0.5rem;">
+                <a href="#" style="color: rgba(255,255,255,0.6); text-decoration: underline;">Integritetspolicy</a> | 
+                <a href="#" style="color: rgba(255,255,255,0.6); text-decoration: underline;">Villkor</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        function toggleMenu() {
+            const navLinks = document.getElementById('navLinks');
+            navLinks.classList.toggle('active');
+        }
+
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                document.getElementById('navLinks').classList.remove('active');
+            });
+        });
+
+        document.addEventListener('click', (e) => {
+            const nav = document.querySelector('nav');
+            const navLinks = document.getElementById('navLinks');
+            if (!nav.contains(e.target)) {
+                navLinks.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
