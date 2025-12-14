@@ -22,13 +22,15 @@
         let directionsRenderer = null;
         let fromAutocomplete = null;
         let toAutocomplete = null;
+        let selectedDate = '';
+        let selectedTime = '';
 
         // Prisberäkningsfunktion
         function taxiPrice(distanceKm, timeMin) {
             const startFee = 50;
             const pricePerKm = 14.9;
             const pricePerMin = 9.6;
-            return startFee + (distanceKm * pricePerKm) + (timeMin * pricePerMin);
+            return Math.round(startFee + (distanceKm * pricePerKm) + (timeMin * pricePerMin));
         }
 
         // Ladda Google Maps
@@ -115,7 +117,27 @@
             setTimeout(() => {
                 initMap();
                 initAutocomplete(); // Initiera autocomplete för kartsidan
+                initDateTimeListeners(); // Initiera datum/tid listeners
             }, 300);
+        }
+
+        function initDateTimeListeners() {
+            const dateInput = document.getElementById('date-input');
+            const timeInput = document.getElementById('time-input');
+            
+            if (dateInput) {
+                dateInput.addEventListener('change', (e) => {
+                    selectedDate = e.target.value;
+                    console.log('Selected date:', selectedDate);
+                });
+            }
+            
+            if (timeInput) {
+                timeInput.addEventListener('change', (e) => {
+                    selectedTime = e.target.value;
+                    console.log('Selected time:', selectedTime);
+                });
+            }
         }
 
         function initMap() {
@@ -176,15 +198,15 @@
                         console.log('Distance (km):', distanceKm);
                         console.log('Time (min):', timeMin);
                         
-                        // Beräkna pris automatiskt
+                        // Beräkna pris automatiskt (avrundad)
                         const price = taxiPrice(distanceKm, timeMin);
                         
-                        console.log('Calculated price:', price.toFixed(2), 'kr');
+                        console.log('Calculated price:', price, 'kr');
                         
                         // Uppdatera UI med data
                         document.getElementById('distance').textContent = leg.distance.text;
                         document.getElementById('duration').textContent = leg.duration.text;
-                        document.getElementById('price').textContent = price.toFixed(2) + ' kr';
+                        document.getElementById('price').textContent = price + ' kr';
                         document.getElementById('route-info').style.display = 'block';
                         
                     } else {
@@ -280,7 +302,7 @@
                                     ← Tillbaka
                                 </button>
                                 
-                                <div class="grid md:grid-cols-2 gap-4">
+                                <div class="grid md:grid-cols-3 gap-4">
                                     <div class="relative">
                                         <label class="block text-xs text-gray-500 mb-1">Från</label>
                                         <div class="flex items-center border-2 border-gray-300 rounded-xl p-3 focus-within:border-blue-500 transition bg-blue-50">
@@ -291,7 +313,7 @@
                                                 id="from-input"
                                                 type="text"
                                                 value="${fromAddress}"
-                                                class="flex-1 outline-none text-gray-800 bg-transparent"
+                                                class="flex-1 outline-none text-gray-800 bg-transparent text-sm"
                                                 placeholder="Skriv startadress..."
                                             />
                                         </div>
@@ -308,9 +330,35 @@
                                                 id="to-input"
                                                 type="text"
                                                 value="${toAddress}"
-                                                class="flex-1 outline-none text-gray-800 bg-transparent"
+                                                class="flex-1 outline-none text-gray-800 bg-transparent text-sm"
                                                 placeholder="Skriv destinationsadress..."
                                             />
+                                        </div>
+                                    </div>
+
+                                    <div class="relative">
+                                        <label class="block text-xs text-gray-500 mb-1">Datum & Tid</label>
+                                        <div class="flex items-center gap-2">
+                                            <div class="flex items-center border-2 border-gray-300 rounded-xl p-3 focus-within:border-purple-500 transition bg-purple-50 flex-1">
+                                                <svg class="w-5 h-5 text-purple-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                </svg>
+                                                <input
+                                                    id="date-input"
+                                                    type="date"
+                                                    class="flex-1 outline-none text-gray-800 bg-transparent text-sm"
+                                                />
+                                            </div>
+                                            <div class="flex items-center border-2 border-gray-300 rounded-xl p-3 focus-within:border-purple-500 transition bg-purple-50 flex-1">
+                                                <svg class="w-5 h-5 text-purple-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                                <input
+                                                    id="time-input"
+                                                    type="time"
+                                                    class="flex-1 outline-none text-gray-800 bg-transparent text-sm"
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
