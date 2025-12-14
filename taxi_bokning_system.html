@@ -125,10 +125,32 @@
             const dateInput = document.getElementById('date-input');
             const timeInput = document.getElementById('time-input');
             
+            // Sätt minsta datum till idag
+            const today = new Date();
+            const todayStr = today.toISOString().split('T')[0];
             if (dateInput) {
+                dateInput.min = todayStr;
+                
                 dateInput.addEventListener('change', (e) => {
                     selectedDate = e.target.value;
                     console.log('Selected date:', selectedDate);
+                    
+                    // Om dagens datum är valt, sätt minsta tid till nuvarande tid
+                    if (selectedDate === todayStr && timeInput) {
+                        const now = new Date();
+                        const currentTime = now.getHours().toString().padStart(2, '0') + ':' + 
+                                          now.getMinutes().toString().padStart(2, '0');
+                        timeInput.min = currentTime;
+                        
+                        // Om vald tid är i det förflutna, rensa den
+                        if (selectedTime && selectedTime < currentTime) {
+                            timeInput.value = '';
+                            selectedTime = '';
+                        }
+                    } else if (timeInput) {
+                        // Ta bort tidsbegränsning för framtida datum
+                        timeInput.removeAttribute('min');
+                    }
                 });
             }
             
@@ -136,6 +158,19 @@
                 timeInput.addEventListener('change', (e) => {
                     selectedTime = e.target.value;
                     console.log('Selected time:', selectedTime);
+                    
+                    // Validera att tiden inte är i det förflutna om dagens datum är valt
+                    if (selectedDate === todayStr) {
+                        const now = new Date();
+                        const currentTime = now.getHours().toString().padStart(2, '0') + ':' + 
+                                          now.getMinutes().toString().padStart(2, '0');
+                        
+                        if (selectedTime < currentTime) {
+                            alert('Du kan inte välja en tid i det förflutna!');
+                            timeInput.value = '';
+                            selectedTime = '';
+                        }
+                    }
                 });
             }
         }
