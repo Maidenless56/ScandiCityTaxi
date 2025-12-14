@@ -3,10 +3,203 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Taxi Bokningssystem</title>
+    <title>Boka Din Resa - ScandiCityTaxi</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary: #0a0a0a;
+            --accent: #3b82f6;
+            --light: #f8fafc;
+            --white: #ffffff;
+            --text: #1a1a1a;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        /* ===== NAVIGATION ===== */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.2rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            position: relative;
+            height: 50px;
+            width: 180px;
+            text-decoration: none;
+            display: block;
+            cursor: pointer;
+        }
+
+        .logo-squares {
+            position: absolute;
+            width: 180px;
+            height: 50px;
+            top: 0;
+            left: 0;
+        }
+
+        .logo-sq {
+            width: 22px;
+            height: 22px;
+            background: #1e1e1e;
+            position: absolute;
+        }
+
+        .logo-sq-top-left { top: 0; left: 22px; }
+        .logo-sq-top-right { top: 0; left: 66px; }
+        .logo-sq-bottom-left { top: 22px; left: 0; }
+        .logo-sq-bottom-middle { top: 22px; left: 44px; }
+        .logo-sq-bottom-right { top: 22px; left: 88px; }
+
+        .logo-taxi {
+            font-size: 27px;
+            font-weight: 900;
+            letter-spacing: 2.5px;
+            color: #f5b600;
+            position: absolute;
+            top: 8px;
+            left: 19px;
+            margin: 0;
+            line-height: 1;
+        }
+
+        .logo-scandi {
+            letter-spacing: 7.5px;
+            font-size: 8px;
+            font-weight: 400;
+            color: #222;
+            position: absolute;
+            top: 49px;
+            left: 0px;
+            margin: 0;
+            line-height: 1;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent);
+        }
+
+        .nav-cta {
+            background: var(--accent);
+            color: white;
+            padding: 0.7rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .nav-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+            color: white;
+        }
+
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+        }
+
+        .menu-toggle span {
+            width: 25px;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 2px;
+            transition: 0.3s;
+        }
+
+        @media (max-width: 968px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: white;
+                flex-direction: column;
+                padding: 2rem;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                gap: 1.5rem;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .menu-toggle {
+                display: flex;
+            }
+        }
+    </style>
 </head>
-<body>
+<body class="bg-gray-50">
+    <!-- ===== NAVIGATION ===== -->
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <div class="logo-squares">
+                    <div class="logo-sq logo-sq-top-left"></div>
+                    <div class="logo-sq logo-sq-top-right"></div>
+                    <div class="logo-sq logo-sq-bottom-left"></div>
+                    <div class="logo-sq logo-sq-bottom-middle"></div>
+                    <div class="logo-sq logo-sq-bottom-right"></div>
+                </div>
+                <h1 class="logo-taxi">TAXI</h1>
+                <h2 class="logo-scandi">SCANDICITY</h2>
+            </a>
+            
+            <div class="menu-toggle" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html">Hem</a></li>
+                <li><a href="index.html#tjanster">Tjänster</a></li>
+                <li><a href="priser.html">Priser</a></li>
+                <li><a href="index.html#om-oss">Om Oss</a></li>
+                <li><a href="index.html#kontakt">Kontakt</a></li>
+                <li><a href="boka.html" class="nav-cta">Boka Nu</a></li>
+            </ul>
+        </div>
+    </nav>
+
     <div id="root"></div>
 
     <script>
@@ -24,6 +217,14 @@
         let toAutocomplete = null;
         let selectedDate = '';
         let selectedTime = '';
+        let calculatedPrice = 0;
+        let calculatedDistance = '';
+        let calculatedDuration = '';
+
+        function toggleMenu() {
+            const navLinks = document.getElementById('navLinks');
+            navLinks.classList.toggle('active');
+        }
 
         // Prisberäkningsfunktion
         function taxiPrice(distanceKm, timeMin) {
@@ -76,7 +277,6 @@
                         };
                         console.log('From:', fromAddress, fromCoords);
                         
-                        // Om vi är på kartsidan, uppdatera rutten direkt
                         if (step === 2 && toCoords) {
                             calculateRoute();
                         }
@@ -93,7 +293,6 @@
                         };
                         console.log('To:', toAddress, toCoords);
                         
-                        // Om vi är på kartsidan, uppdatera rutten direkt
                         if (step === 2 && fromCoords) {
                             calculateRoute();
                         }
@@ -104,8 +303,6 @@
 
         function showRoute() {
             console.log('Show route clicked');
-            console.log('From:', fromAddress, fromCoords);
-            console.log('To:', toAddress, toCoords);
 
             if (!fromAddress || !toAddress || !fromCoords || !toCoords) {
                 alert('Vänligen välj adresser från förslagen i listan!');
@@ -116,8 +313,8 @@
             render();
             setTimeout(() => {
                 initMap();
-                initAutocomplete(); // Initiera autocomplete för kartsidan
-                initDateTimeListeners(); // Initiera datum/tid listeners
+                initAutocomplete();
+                initDateTimeListeners();
             }, 300);
         }
 
@@ -125,7 +322,6 @@
             const dateInput = document.getElementById('date-input');
             const timeInput = document.getElementById('time-input');
             
-            // Sätt minsta datum till idag
             const today = new Date();
             const todayStr = today.toISOString().split('T')[0];
             if (dateInput) {
@@ -135,20 +331,17 @@
                     selectedDate = e.target.value;
                     console.log('Selected date:', selectedDate);
                     
-                    // Om dagens datum är valt, sätt minsta tid till nuvarande tid
                     if (selectedDate === todayStr && timeInput) {
                         const now = new Date();
                         const currentTime = now.getHours().toString().padStart(2, '0') + ':' + 
                                           now.getMinutes().toString().padStart(2, '0');
                         timeInput.min = currentTime;
                         
-                        // Om vald tid är i det förflutna, rensa den
                         if (selectedTime && selectedTime < currentTime) {
                             timeInput.value = '';
                             selectedTime = '';
                         }
                     } else if (timeInput) {
-                        // Ta bort tidsbegränsning för framtida datum
                         timeInput.removeAttribute('min');
                     }
                 });
@@ -159,7 +352,6 @@
                     selectedTime = e.target.value;
                     console.log('Selected time:', selectedTime);
                     
-                    // Validera att tiden inte är i det förflutna om dagens datum är valt
                     if (selectedDate === todayStr) {
                         const now = new Date();
                         const currentTime = now.getHours().toString().padStart(2, '0') + ':' + 
@@ -202,8 +394,6 @@
 
         function calculateRoute() {
             console.log('Calculating route...');
-            console.log('From coords:', fromCoords);
-            console.log('To coords:', toCoords);
             
             if (!fromCoords || !toCoords) {
                 console.error('Missing coordinates');
@@ -226,22 +416,16 @@
                         const route = result.routes[0];
                         const leg = route.legs[0];
                         
-                        // Hämta avstånd och tid från Google Maps
-                        const distanceKm = leg.distance.value / 1000; // Konvertera meter till km
-                        const timeMin = leg.duration.value / 60; // Konvertera sekunder till minuter
+                        const distanceKm = leg.distance.value / 1000;
+                        const timeMin = leg.duration.value / 60;
                         
-                        console.log('Distance (km):', distanceKm);
-                        console.log('Time (min):', timeMin);
+                        calculatedPrice = taxiPrice(distanceKm, timeMin);
+                        calculatedDistance = leg.distance.text;
+                        calculatedDuration = leg.duration.text;
                         
-                        // Beräkna pris automatiskt (avrundad)
-                        const price = taxiPrice(distanceKm, timeMin);
-                        
-                        console.log('Calculated price:', price, 'kr');
-                        
-                        // Uppdatera UI med data
-                        document.getElementById('distance').textContent = leg.distance.text;
-                        document.getElementById('duration').textContent = leg.duration.text;
-                        document.getElementById('price').textContent = price + ' kr';
+                        document.getElementById('distance').textContent = calculatedDistance;
+                        document.getElementById('duration').textContent = calculatedDuration;
+                        document.getElementById('price').textContent = calculatedPrice + ' kr';
                         document.getElementById('route-info').style.display = 'block';
                         
                     } else {
@@ -250,6 +434,26 @@
                     }
                 }
             );
+        }
+
+        function goToBookingForm() {
+            if (!selectedDate || !selectedTime) {
+                alert('Vänligen välj datum och tid för din resa!');
+                return;
+            }
+
+            const bookingData = {
+                from: fromAddress,
+                to: toAddress,
+                date: selectedDate,
+                time: selectedTime,
+                price: calculatedPrice,
+                distance: calculatedDistance,
+                duration: calculatedDuration
+            };
+
+            sessionStorage.setItem('bookingData', JSON.stringify(bookingData));
+            window.location.href = 'booking-form.html';
         }
 
         function goBack() {
@@ -268,7 +472,7 @@
             if (step === 1) {
                 root.innerHTML = `
                     <div class="min-h-screen flex items-center justify-center bg-cover bg-center relative" 
-                         style="background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url(https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=1600)">
+                         style="margin-top: 76px; background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url(https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=1600)">
                         <div class="w-full max-w-2xl mx-auto px-4">
                             <h1 class="text-6xl font-bold text-white text-center mb-16 drop-shadow-2xl">
                                 Vart vill du åka?
@@ -327,7 +531,7 @@
                 
             } else {
                 root.innerHTML = `
-                    <div class="h-screen flex flex-col">
+                    <div class="h-screen flex flex-col" style="margin-top: 76px;">
                         <div class="bg-white shadow-lg z-10 p-4">
                             <div class="container mx-auto">
                                 <button
@@ -421,7 +625,7 @@
                                             <p id="price" class="text-2xl font-bold text-green-600">-</p>
                                         </div>
                                     </div>
-                                    <button class="bg-blue-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition shadow-lg">
+                                    <button onclick="goToBookingForm()" class="bg-blue-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition shadow-lg">
                                         Boka resa
                                     </button>
                                 </div>
@@ -432,7 +636,6 @@
             }
         }
 
-        // Starta appen
         render();
     </script>
 </body>
