@@ -23,6 +23,14 @@
         let fromAutocomplete = null;
         let toAutocomplete = null;
 
+        // Prisberäkningsfunktion
+        function taxiPrice(distanceKm, timeMin) {
+            const startFee = 50;
+            const pricePerKm = 14.9;
+            const pricePerMin = 9.6;
+            return startFee + (distanceKm * pricePerKm) + (timeMin * pricePerMin);
+        }
+
         // Ladda Google Maps
         function loadGoogleMaps() {
             if (window.google) return;
@@ -124,6 +132,8 @@
 
         function calculateRoute() {
             console.log('Calculating route...');
+            console.log('From coords:', fromCoords);
+            console.log('To coords:', toCoords);
             
             const directionsService = new google.maps.DirectionsService();
 
@@ -141,12 +151,34 @@
                         const route = result.routes[0];
                         const leg = route.legs[0];
                         
+                        // Hämta avstånd och tid från Google Maps
+                        const distanceKm = leg.distance.value / 1000; // Konvertera meter till km
+                        const timeMin = leg.duration.value / 60; // Konvertera sekunder till minuter
+                        
+                        console.log('Distance (km):', distanceKm);
+                        console.log('Time (min):', timeMin);
+                        
+                        // Beräkna pris automatiskt
+                        const price = taxiPrice(distanceKm, timeMin);
+                        
+                        console.log('Calculated price:', price.toFixed(2), 'kr');
+                        
+                        // Uppdatera UI med data
                         document.getElementById('distance').textContent = leg.distance.text;
                         document.getElementById('duration').textContent = leg.duration.text;
+                        document.getElementById('price').textContent = price.toFixed(2) + ' kr';
                         document.getElementById('route-info').style.display = 'block';
                         
-                        console.log('Distance:', leg.distance.text);
-                        console.log('Duration:', leg.duration.text);
+                        // Uppdatera även i headern
+                        const routeInfoHeader = document.querySelector('.bg-purple-50 p');
+                        if (routeInfoHeader) {
+                            routeInfoHeader.innerHTML = `
+                                <span class="font-semibold text-gray-800 text-sm">
+                                    ${leg.distance.text} • ${leg.duration.text} • ${price.toFixed(2)} kr
+                                </span>
+                            `;
+                        }
+                        
                     } else {
                         console.error('Directions request failed:', status);
                         alert('Kunde inte beräkna rutten. Fel: ' + status);
@@ -274,6 +306,10 @@
                                         <div>
                                             <p class="text-sm text-gray-500">Restid</p>
                                             <p id="duration" class="text-2xl font-bold text-blue-600">-</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm text-gray-500">Pris</p>
+                                            <p id="price" class="text-2xl font-bold text-green-600">-</p>
                                         </div>
                                     </div>
                                     <button class="bg-blue-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition shadow-lg">
