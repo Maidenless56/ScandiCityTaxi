@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slutför Bokning - ScandiCityTaxi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary: #0a0a0a;
+            --accent: #3b82f6;
+            --light: #f8fafc;
+            --white: #ffffff;
+            --text: #1a1a1a;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.2rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            position: relative;
+            height: 50px;
+            width: 180px;
+            text-decoration: none;
+            display: block;
+            cursor: pointer;
+        }
+
+        .logo-squares {
+            position: absolute;
+            width: 180px;
+            height: 50px;
+            top: 0;
+            left: 0;
+        }
+
+        .logo-sq {
+            width: 22px;
+            height: 22px;
+            background: #1e1e1e;
+            position: absolute;
+        }
+
+        .logo-sq-top-left { top: 0; left: 22px; }
+        .logo-sq-top-right { top: 0; left: 66px; }
+        .logo-sq-bottom-left { top: 22px; left: 0; }
+        .logo-sq-bottom-middle { top: 22px; left: 44px; }
+        .logo-sq-bottom-right { top: 22px; left: 88px; }
+
+        .logo-taxi {
+            font-size: 27px;
+            font-weight: 900;
+            letter-spacing: 2.5px;
+            color: #f5b600;
+            position: absolute;
+            top: 8px;
+            left: 19px;
+            margin: 0;
+            line-height: 1;
+        }
+
+        .logo-scandi {
+            letter-spacing: 7.5px;
+            font-size: 8px;
+            font-weight: 400;
+            color: #222;
+            position: absolute;
+            top: 49px;
+            left: 0px;
+            margin: 0;
+            line-height: 1;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent);
+        }
+
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+        }
+
+        .menu-toggle span {
+            width: 25px;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        @media (max-width: 968px) {
+            .nav-links {
+                display: none;
+            }
+            .menu-toggle {
+                display: flex;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <div class="logo-squares">
+                    <div class="logo-sq logo-sq-top-left"></div>
+                    <div class="logo-sq logo-sq-top-right"></div>
+                    <div class="logo-sq logo-sq-bottom-left"></div>
+                    <div class="logo-sq logo-sq-bottom-middle"></div>
+                    <div class="logo-sq logo-sq-bottom-right"></div>
+                </div>
+                <h1 class="logo-taxi">TAXI</h1>
+                <h2 class="logo-scandi">SCANDICITY</h2>
+            </a>
+            
+            <div class="menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+
+            <ul class="nav-links">
+                <li><a href="index.html">Hem</a></li>
+                <li><a href="index.html#tjanster">Tjänster</a></li>
+                <li><a href="priser.html">Priser</a></li>
+                <li><a href="index.html#om-oss">Om Oss</a></li>
+                <li><a href="index.html#kontakt">Kontakt</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="min-h-screen pt-32 pb-16 px-4">
+        <div class="max-w-4xl mx-auto">
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <h1 class="text-4xl font-bold text-gray-900 mb-2">Slutför Din Bokning</h1>
+                <p class="text-gray-600">Fyll i dina uppgifter så bekräftar vi din resa</p>
+            </div>
+
+            <!-- Reseinformation Summary -->
+            <div class="bg-white rounded-2xl shadow-lg p-6 mb-8 border border-gray-200">
+                <h2 class="text-xl font-bold text-gray-900 mb-4">📍 Din Resa</h2>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="bg-blue-50 rounded-xl p-4">
+                        <p class="text-xs text-gray-600 mb-1">Från</p>
+                        <p class="font-semibold text-gray-900" id="summary-from">-</p>
+                    </div>
+                    <div class="bg-green-50 rounded-xl p-4">
+                        <p class="text-xs text-gray-600 mb-1">Till</p>
+                        <p class="font-semibold text-gray-900" id="summary-to">-</p>
+                    </div>
+                    <div class="bg-purple-50 rounded-xl p-4">
+                        <p class="text-xs text-gray-600 mb-1">Datum & Tid</p>
+                        <p class="font-semibold text-gray-900" id="summary-datetime">-</p>
+                    </div>
+                    <div class="bg-yellow-50 rounded-xl p-4">
+                        <p class="text-xs text-gray-600 mb-1">Avstånd & Restid</p>
+                        <p class="font-semibold text-gray-900" id="summary-distance">-</p>
+                    </div>
+                </div>
+                <div class="mt-4 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-4 text-white">
+                    <div class="flex justify-between items-center">
+                        <span class="text-lg font-medium">Totalpris:</span>
+                        <span class="text-3xl font-bold" id="summary-price">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulär -->
+            <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-200">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">👤 Dina Uppgifter</h2>
+                
+                <form id="booking-form" class="space-y-6">
+                    <!-- Namn -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Fullständigt Namn *
+                        </label>
+                        <input
+                            type="text"
+                            id="name"
+                            required
+                            class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:outline-none transition"
+                            placeholder="Ex: Anna Andersson"
+                        />
+                    </div>
+
+                    <!-- Telefonnummer -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Telefonnummer *
+                        </label>
+                        <input
+                            type="tel"
+                            id="phone"
+                            required
+                            class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:outline-none transition"
+                            placeholder="Ex: 070-123 45 67"
+                        />
+                    </div>
+
+                    <!-- E-post (valfritt) -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            E-postadress (valfritt)
+                        </label>
+                        <input
+                            type="email"
+                            id="email"
+                            class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:outline-none transition"
+                            placeholder="Ex: anna@exempel.se"
+                        />
+                    </div>
+
+                    <!-- Antal passagerare -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Antal Passagerare *
+                        </label>
+                        <select
+                            id="passengers"
+                            required
+                            class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:outline-none transition"
+                        >
+                            <option value="">Välj antal passagerare</option>
+                            <option value="1">1 passagerare</option>
+                            <option value="2">2 passagerare</option>
+                            <option value="3">3 passagerare</option>
+                            <option value="4">4 passagerare</option>
+                            <option value="5+">5+ passagerare</option>
+                        </select>
+                    </div>
+
+                    <!-- Övrig information -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Övrig Information (valfritt)
+                        </label>
+                        <textarea
+                            id="notes"
+                            rows="4"
+                            class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:outline-none transition resize-none"
+                            placeholder="Ex: Stort bagage, husdjur, specialkrav..."
+                        ></textarea>
+                    </div>
+
+                    <!-- Betalningsmetod -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Betalningsmetod *
+                        </label>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <label class="flex items-center p-4 border-2 border-gray-300 rounded-xl cursor-pointer hover:border-blue-500 transition">
+                                <input type="radio" name="payment" value="swish" required class="mr-3">
+                                <span class="font-medium">Swish</span>
+                            </label>
+                            <label class="flex items-center p-4 border-2 border-gray-300 rounded-xl cursor-pointer hover:border-blue-500 transition">
+                                <input type="radio" name="payment" value="card" required class="mr-3">
+                                <span class="font-medium">Kort</span>
+                            </label>
+                            <label class="flex items-center p-4 border-2 border-gray-300 rounded-xl cursor-pointer hover:border-blue-500 transition">
+                                <input type="radio" name="payment" value="cash" required class="mr-3">
+                                <span class="font-medium">Kontant</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="flex gap-4 pt-4">
+                        <button
+                            type="button"
+                            onclick="history.back()"
+                            class="flex-1 px-6 py-4 border-2 border-gray-300 rounded-xl font-bold text-gray-700 hover:bg-gray-50 transition"
+                        >
+                            ← Tillbaka
+                        </button>
+                        <button
+                            type="submit"
+                            class="flex-1 px-6 py-4 bg-blue-600 text-white rounded-xl font-bold text-lg hover:bg-blue-700 transition shadow-lg"
+                        >
+                            Bekräfta Bokning
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Info box -->
+            <div class="mt-8 bg-blue-50 rounded-xl p-6 border border-blue-200">
+                <div class="flex items-start">
+                    <span class="text-2xl mr-3">ℹ️</span>
+                    <div>
+                        <h3 class="font-bold text-gray-900 mb-2">Bekräftelse</h3>
+                        <p class="text-gray-700 text-sm">
+                            Vi kontaktar dig via SMS eller telefon inom kort för att bekräfta din bokning. 
+                            Du kan alltid nå oss på <a href="tel:0737726069" class="text-blue-600 font-semibold">073-772 60 69</a>.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Hämta bokningsdata från sessionStorage
+        const bookingData = JSON.parse(sessionStorage.getItem('bookingData') || '{}');
+
+        // Om ingen data finns, skicka tillbaka till bokningssidan
+        if (!bookingData.from || !bookingData.to) {
+            window.location.href = 'boka.html';
+        }
+
+        // Fyll i sammanfattningen
+        document.getElementById('summary-from').textContent = bookingData.from || '-';
+        document.getElementById('summary-to').textContent = bookingData.to || '-';
+        document.getElementById('summary-datetime').textContent = 
+            `${bookingData.date} kl ${bookingData.time}` || '-';
+        document.getElementById('summary-distance').textContent = 
+            `${bookingData.distance} • ${bookingData.duration}` || '-';
+        document.getElementById('summary-price').textContent = 
+            `${bookingData.price} kr` || '-';
+
+        // Hantera formulärinlämning
+        document.getElementById('booking-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = {
+                // Bokningsdata
+                from: bookingData.from,
+                to: bookingData.to,
+                date: bookingData.date,
+                time: bookingData.time,
+                price: bookingData.price,
+                distance: bookingData.distance,
+                duration: bookingData.duration,
+                
+                // Kunddata
+                name: document.getElementById('name').value,
+                phone: document.getElementById('phone').value,
+                email: document.getElementById('email').value,
+                passengers: document.getElementById('passengers').value,
+                notes: document.getElementById('notes').value,
+                payment: document.querySelector('input[name="payment"]:checked').value
+            };
+
+            console.log('Bokningsdata:', formData);
+
+            // Här kan du skicka data till din backend/databas
+            // För nu visar vi bara en bekräftelse
+
+            alert('Tack för din bokning! Vi bekräftar din resa via SMS eller telefon inom kort.');
+            
+            // Rensa sessionStorage
+            sessionStorage.removeItem('bookingData');
+            
+            // Skicka till startsidan
+            window.location.href = 'index.html';
+        });
+    </script>
+</body>
+</html>
