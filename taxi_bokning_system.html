@@ -350,6 +350,7 @@
         let calculatedDistance = '';
         let calculatedDuration = '';
         let fastPris = null;
+        let googleMapsLoaded = false;
 
         function toggleMenu() {
             const navLinks = document.getElementById('navLinks');
@@ -363,70 +364,99 @@
             return Math.round(startFee + (distanceKm * pricePerKm) + (timeMin * pricePerMin));
         }
 
+        // Global callback för Google Maps
+        window.initAutocomplete = function() {
+            console.log('Google Maps loaded!');
+            googleMapsLoaded = true;
+            
+            setTimeout(() => {
+                setupAutocomplete();
+            }, 300);
+        }
+
         function loadGoogleMaps() {
-            if (window.google) return;
+            if (googleMapsLoaded || window.google) {
+                console.log('Google Maps already loaded');
+                if (window.google) {
+                    setupAutocomplete();
+                }
+                return;
+            }
             
             const script = document.createElement('script');
             script.src = `https://maps.googleapis.com/maps/api/js?key=${API_KEY}&libraries=places&callback=initAutocomplete`;
             script.async = true;
             script.defer = true;
+            script.onerror = () => {
+                console.error('Failed to load Google Maps');
+                alert('Kunde inte ladda Google Maps. Kontrollera din internetanslutning.');
+            };
             document.head.appendChild(script);
         }
 
-        function initAutocomplete() {
-            console.log('Google Maps loaded!');
-            
-            setTimeout(() => {
-                const fromInput = document.getElementById('from-input');
-                const toInput = document.getElementById('to-input');
+        function setupAutocomplete() {
+            const fromInput = document.getElementById('from-input');
+            const toInput = document.getElementById('to-input');
 
-                if (!fromInput || !toInput) {
-                    console.error('Inputs not found');
-                    return;
+            if (!fromInput || !toInput) {
+                console.error('Inputs not found');
+                return;
+            }
+
+            if (!window.google || !window.google.maps || !window.google.maps.places) {
+                console.error('Google Maps API not loaded properly');
+                return;
+            }
+
+            // Rensa tidigare autocomplete om de finns
+            if (fromAutocomplete) {
+                google.maps.event.clearInstanceListeners(fromInput);
+            }
+            if (toAutocomplete) {
+                google.maps.event.clearInstanceListeners(toInput);
+            }
+
+            fromAutocomplete = new google.maps.places.Autocomplete(fromInput, {
+                componentRestrictions: { country: 'se' },
+                fields: ['formatted_address', 'geometry'],
+            });
+
+            toAutocomplete = new google.maps.places.Autocomplete(toInput, {
+                componentRestrictions: { country: 'se' },
+                fields: ['formatted_address', 'geometry'],
+            });
+
+            fromAutocomplete.addListener('place_changed', () => {
+                const place = fromAutocomplete.getPlace();
+                if (place.geometry) {
+                    fromAddress = place.formatted_address;
+                    fromCoords = {
+                        lat: place.geometry.location.lat(),
+                        lng: place.geometry.location.lng(),
+                    };
+                    console.log('From:', fromAddress, fromCoords);
+                    
+                    if (step === 2 && toCoords) {
+                        calculateRoute();
+                    }
                 }
+            });
 
-                fromAutocomplete = new google.maps.places.Autocomplete(fromInput, {
-                    componentRestrictions: { country: 'se' },
-                    fields: ['formatted_address', 'geometry'],
-                });
-
-                toAutocomplete = new google.maps.places.Autocomplete(toInput, {
-                    componentRestrictions: { country: 'se' },
-                    fields: ['formatted_address', 'geometry'],
-                });
-
-                fromAutocomplete.addListener('place_changed', () => {
-                    const place = fromAutocomplete.getPlace();
-                    if (place.geometry) {
-                        fromAddress = place.formatted_address;
-                        fromCoords = {
-                            lat: place.geometry.location.lat(),
-                            lng: place.geometry.location.lng(),
-                        };
-                        console.log('From:', fromAddress, fromCoords);
-                        
-                        if (step === 2 && toCoords) {
-                            calculateRoute();
-                        }
+            toAutocomplete.addListener('place_changed', () => {
+                const place = toAutocomplete.getPlace();
+                if (place.geometry) {
+                    toAddress = place.formatted_address;
+                    toCoords = {
+                        lat: place.geometry.location.lat(),
+                        lng: place.geometry.location.lng(),
+                    };
+                    console.log('To:', toAddress, toCoords);
+                    
+                    if (step === 2 && fromCoords) {
+                        calculateRoute();
                     }
-                });
-
-                toAutocomplete.addListener('place_changed', () => {
-                    const place = toAutocomplete.getPlace();
-                    if (place.geometry) {
-                        toAddress = place.formatted_address;
-                        toCoords = {
-                            lat: place.geometry.location.lat(),
-                            lng: place.geometry.location.lng(),
-                        };
-                        console.log('To:', toAddress, toCoords);
-                        
-                        if (step === 2 && fromCoords) {
-                            calculateRoute();
-                        }
-                    }
-                });
-            }, 500);
+                }
+            });
         }
 
         function showRoute() {
@@ -437,16 +467,19 @@
                 return;
             }
             
-            // Kolla om det finns fast pris
             const prisInfo = kollaPris(fromAddress, toAddress);
             console.log('Pris info:', prisInfo);
             
             step = 2;
             render();
             setTimeout(() => {
-                initMap();
-                initAutocomplete();
-                initDateTimeListeners();
+                if (googleMapsLoaded && window.google) {
+                    initMap();
+                    setupAutocomplete();
+                    initDateTimeListeners();
+                } else {
+                    console.error('Google Maps not loaded yet');
+                }
             }, 300);
         }
 
@@ -508,6 +541,11 @@
                 return;
             }
 
+            if (!window.google || !window.google.maps) {
+                console.error('Google Maps API not available');
+                return;
+            }
+
             map = new google.maps.Map(mapElement, {
                 zoom: 7,
                 center: { lat: 59.3293, lng: 18.0686 },
@@ -531,10 +569,13 @@
                 console.error('Missing coordinates');
                 return;
             }
+
+            if (!window.google || !window.google.maps) {
+                console.error('Google Maps API not available');
+                return;
+            }
             
-            // Kolla om det finns fast pris
             const prisInfo = kollaPris(fromAddress, toAddress);
-            
             const directionsService = new google.maps.DirectionsService();
 
             directionsService.route(
@@ -554,7 +595,6 @@
                         calculatedDistance = leg.distance.text;
                         calculatedDuration = leg.duration.text;
                         
-                        // Använd fast pris om det finns, annars beräkna
                         if (prisInfo.harFastPris) {
                             calculatedPrice = prisInfo.pris;
                             fastPris = prisInfo;
@@ -614,8 +654,8 @@
             step = 1;
             render();
             setTimeout(() => {
-                if (window.google) {
-                    initAutocomplete();
+                if (googleMapsLoaded && window.google) {
+                    setupAutocomplete();
                 }
             }, 100);
         }
@@ -687,7 +727,7 @@
                 root.innerHTML = `
                     <div class="h-screen flex flex-col" style="margin-top: 76px;">
                         <div class="bg-white shadow-lg z-10 p-4">
-                            <div class="container mx-auto">
+                            <div class="container mx-auto max-w-6xl px-4">
                                 <button
                                     onclick="goBack()"
                                     class="text-blue-600 hover:text-blue-700 font-medium mb-4"
@@ -763,7 +803,7 @@
                         </div>
 
                         <div id="route-info" class="bg-white border-t shadow-lg p-6" style="display: none;">
-                            <div class="container mx-auto">
+                            <div class="container mx-auto max-w-6xl px-4">
                                 <div class="flex items-center justify-between flex-wrap gap-4">
                                     <div class="flex items-center space-x-8">
                                         <div>
