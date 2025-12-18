@@ -586,27 +586,27 @@
                                     ← Tillbaka
                                 </button>
                                 
-                                <div class="grid md:grid-cols-3 gap-4">
+                                <div class="grid md:grid-cols-3 gap-3">
                                     <div class="relative">
                                         <label class="block text-xs text-gray-500 mb-1">Från</label>
-                                        <div class="flex items-center border-2 border-gray-300 rounded-xl p-3 focus-within:border-blue-500 transition bg-blue-50">
-                                            <svg class="w-5 h-5 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <div class="flex items-center border-2 border-gray-300 rounded-lg p-2 focus-within:border-blue-500 transition bg-blue-50">
+                                            <svg class="w-4 h-4 text-blue-500 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                                             </svg>
                                             <input
                                                 id="from-input"
                                                 type="text"
                                                 value="${fromAddress}"
-                                                class="flex-1 outline-none text-gray-800 bg-transparent text-sm"
-                                                placeholder="Skriv startadress..."
+                                                class="flex-1 outline-none text-gray-800 bg-transparent text-xs min-w-0"
+                                                placeholder="Startadress..."
                                             />
                                         </div>
                                     </div>
 
                                     <div class="relative">
                                         <label class="block text-xs text-gray-500 mb-1">Till</label>
-                                        <div class="flex items-center border-2 border-gray-300 rounded-xl p-3 focus-within:border-blue-500 transition bg-green-50">
-                                            <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <div class="flex items-center border-2 border-gray-300 rounded-lg p-2 focus-within:border-blue-500 transition bg-green-50">
+                                            <svg class="w-4 h-4 text-green-500 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                             </svg>
@@ -614,33 +614,33 @@
                                                 id="to-input"
                                                 type="text"
                                                 value="${toAddress}"
-                                                class="flex-1 outline-none text-gray-800 bg-transparent text-sm"
-                                                placeholder="Skriv destinationsadress..."
+                                                class="flex-1 outline-none text-gray-800 bg-transparent text-xs min-w-0"
+                                                placeholder="Destination..."
                                             />
                                         </div>
                                     </div>
 
                                     <div class="relative">
                                         <label class="block text-xs text-gray-500 mb-1">Datum & Tid</label>
-                                        <div class="flex items-center gap-2">
-                                            <div class="flex items-center border-2 border-gray-300 rounded-xl p-3 focus-within:border-purple-500 transition bg-purple-50 flex-1">
-                                                <svg class="w-5 h-5 text-purple-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <div class="flex items-center gap-1">
+                                            <div class="flex items-center border-2 border-gray-300 rounded-lg p-2 focus-within:border-purple-500 transition bg-purple-50 flex-1 min-w-0">
+                                                <svg class="w-4 h-4 text-purple-500 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                                 </svg>
                                                 <input
                                                     id="date-input"
                                                     type="date"
-                                                    class="flex-1 outline-none text-gray-800 bg-transparent text-sm"
+                                                    class="flex-1 outline-none text-gray-800 bg-transparent text-xs min-w-0"
                                                 />
                                             </div>
-                                            <div class="flex items-center border-2 border-gray-300 rounded-xl p-3 focus-within:border-purple-500 transition bg-purple-50 flex-1">
-                                                <svg class="w-5 h-5 text-purple-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <div class="flex items-center border-2 border-gray-300 rounded-lg p-2 focus-within:border-purple-500 transition bg-purple-50 flex-1 min-w-0">
+                                                <svg class="w-4 h-4 text-purple-500 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                 </svg>
                                                 <input
                                                     id="time-input"
                                                     type="time"
-                                                    class="flex-1 outline-none text-gray-800 bg-transparent text-sm"
+                                                    class="flex-1 outline-none text-gray-800 bg-transparent text-xs min-w-0"
                                                 />
                                             </div>
                                         </div>
