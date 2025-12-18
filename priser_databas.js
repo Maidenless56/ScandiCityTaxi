@@ -1,4 +1,4 @@
-// Priserdatabas för ScandiCityTaxi
+// ===== PRISERDATABAS FÖR SCANDICITYTAXI =====
 // Detta är en separat fil som innehåller alla fasta priser mellan destinationer
 
 const PRISER_DATABAS = {
@@ -23,55 +23,23 @@ const PRISER_DATABAS = {
   "FLEN|SÖDERTÄLJE": 1990,
   "FLEN|ÖREBRO": 2699,
   
-  // Från Sparreholm (omvända rutter)
+  // Omvända rutter
   "SPARREHOLM|FLEN": 429,
-  
-  // Från Hälleforsnäs
   "HÄLLEFORSNÄS|FLEN": 399,
-  
-  // Från Malmköping
   "MALMKÖPING|FLEN": 449,
-  
-  // Från Katrineholm
   "KATRINEHOLM|FLEN": 699,
-  
-  // Från Strängnäs
   "STRÄNGNÄS|FLEN": 1199,
-  
-  // Från Gnesta
   "GNESTA|FLEN": 1199,
-  
-  // Från Eskilstuna
   "ESKILSTUNA|FLEN": 1299,
-  
-  // Från Nyköping
   "NYKÖPING|FLEN": 1299,
-  
-  // Från Arlanda
   "ARLANDA|FLEN": 2499,
-  
-  // Från Skavsta
   "SKAVSTA|FLEN": 899,
-  
-  // Från Bromma
   "BROMMA|FLEN": 2890,
-  
-  // Från Västerås Flygplats
   "VÄSTERÅS FLYGPLATS|FLEN": 2399,
-  
-  // Från Stockholm
   "STOCKHOLM|FLEN": 2690,
-  
-  // Från Västerås
   "VÄSTERÅS|FLEN": 2299,
-  
-  // Från Norrköping
   "NORRKÖPING|FLEN": 2099,
-  
-  // Från Södertälje
   "SÖDERTÄLJE|FLEN": 1990,
-  
-  // Från Örebro
   "ÖREBRO|FLEN": 2699,
 };
 
@@ -179,7 +147,20 @@ function kollaPris(fromAddress, toAddress) {
   };
 }
 
-// Exportera funktioner och data
+/**
+ * Beräkna taxipris baserat på avstånd och tid (för rutter utan fast pris)
+ * @param {number} distanceKm - Avstånd i kilometer
+ * @param {number} timeMin - Tid i minuter
+ * @returns {number} - Beräknat pris i kronor
+ */
+function taxiPrice(distanceKm, timeMin) {
+  const startFee = 50;
+  const pricePerKm = 14.9;
+  const pricePerMin = 9.6;
+  return Math.round(startFee + (distanceKm * pricePerKm) + (timeMin * pricePerMin));
+}
+
+// Exportera funktioner och data för användning i andra filer
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
     PRISER_DATABAS,
@@ -187,6 +168,7 @@ if (typeof module !== 'undefined' && module.exports) {
     STAD_SYNONYMER,
     hittatStadIAdress,
     hamtaFastPris,
-    kollaPris
+    kollaPris,
+    taxiPrice
   };
 }
