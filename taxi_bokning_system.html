@@ -143,6 +143,30 @@
             transition: 0.3s;
         }
 
+        .price-badge {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .info-box {
+            background: #fef3c7;
+            border: 2px solid #fbbf24;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
         @media (max-width: 968px) {
             .nav-links {
                 display: none;
@@ -192,7 +216,6 @@
             <ul class="nav-links" id="navLinks">
                 <li><a href="index.html">Hem</a></li>
                 <li><a href="index.html#tjanster">Tjänster</a></li>
-                <li><a href="priser.html">Priser</a></li>
                 <li><a href="index.html#om-oss">Om Oss</a></li>
                 <li><a href="index.html#kontakt">Kontakt</a></li>
                 <li><a href="boka.html" class="nav-cta">Boka Nu</a></li>
@@ -202,8 +225,11 @@
 
     <div id="root"></div>
 
+    <!-- ===== LADDA PRISDATABAS FÖRST ===== -->
+    <script src="priser_databas.js"></script>
+
     <script>
-        
+        // ===== BOKNINGSSYSTEM =====
         const API_KEY = 'AIzaSyCI3lE_xCB76Z889muJXIAx01TPiZeVC-o';
 
         let step = 1;
@@ -220,21 +246,13 @@
         let calculatedPrice = 0;
         let calculatedDistance = '';
         let calculatedDuration = '';
+        let fastPris = null;
 
         function toggleMenu() {
             const navLinks = document.getElementById('navLinks');
             navLinks.classList.toggle('active');
         }
 
-        // Prisberäkningsfunktion
-        function taxiPrice(distanceKm, timeMin) {
-            const startFee = 50;
-            const pricePerKm = 14.9;
-            const pricePerMin = 9.6;
-            return Math.round(startFee + (distanceKm * pricePerKm) + (timeMin * pricePerMin));
-        }
-
-        // Ladda Google Maps
         function loadGoogleMaps() {
             if (window.google) return;
             
@@ -308,6 +326,10 @@
                 alert('Vänligen välj adresser från förslagen i listan!');
                 return;
             }
+            
+            // Kolla om det finns fast pris (använder funktionen från priser_databas.js)
+            const prisInfo = kollaPris(fromAddress, toAddress);
+            console.log('Pris info:', prisInfo);
             
             step = 2;
             render();
@@ -400,6 +422,9 @@
                 return;
             }
             
+            // Kolla om det finns fast pris (använder funktionen från priser_databas.js)
+            const prisInfo = kollaPris(fromAddress, toAddress);
+            
             const directionsService = new google.maps.DirectionsService();
 
             directionsService.route(
@@ -416,16 +441,35 @@
                         const route = result.routes[0];
                         const leg = route.legs[0];
                         
-                        const distanceKm = leg.distance.value / 1000;
-                        const timeMin = leg.duration.value / 60;
-                        
-                        calculatedPrice = taxiPrice(distanceKm, timeMin);
                         calculatedDistance = leg.distance.text;
                         calculatedDuration = leg.duration.text;
                         
+                        // Använd fast pris om det finns, annars beräkna
+                        if (prisInfo.harFastPris) {
+                            calculatedPrice = prisInfo.pris;
+                            fastPris = prisInfo;
+                            document.getElementById('price').innerHTML = `
+                                <span class="price-badge">${calculatedPrice} kr</span>
+                                <span style="display: block; font-size: 0.9rem; margin-top: 0.5rem; color: #10b981;">
+                                    ✓ Fast pris ${prisInfo.franStad} → ${prisInfo.tillStad}
+                                </span>
+                            `;
+                        } else {
+                            // Använd taxiPrice från priser_databas.js
+                            const distanceKm = leg.distance.value / 1000;
+                            const timeMin = leg.duration.value / 60;
+                            calculatedPrice = taxiPrice(distanceKm, timeMin);
+                            fastPris = null;
+                            document.getElementById('price').innerHTML = `
+                                ${calculatedPrice} kr
+                                <span style="display: block; font-size: 0.85rem; margin-top: 0.3rem; color: #64748b;">
+                                    (Beräknat pris)
+                                </span>
+                            `;
+                        }
+                        
                         document.getElementById('distance').textContent = calculatedDistance;
                         document.getElementById('duration').textContent = calculatedDuration;
-                        document.getElementById('price').textContent = calculatedPrice + ' kr';
                         document.getElementById('route-info').style.display = 'block';
                         
                     } else {
@@ -449,7 +493,8 @@
                 time: selectedTime,
                 price: calculatedPrice,
                 distance: calculatedDistance,
-                duration: calculatedDuration
+                duration: calculatedDuration,
+                fastPris: fastPris
             };
 
             sessionStorage.setItem('bookingData', JSON.stringify(bookingData));
@@ -514,12 +559,12 @@
                                     onclick="showRoute()"
                                     class="w-full py-5 rounded-xl font-bold text-xl transition shadow-lg mt-8 bg-blue-600 text-white hover:bg-blue-700 hover:shadow-xl"
                                 >
-                                    Visa rutt
+                                    Visa rutt & pris
                                 </button>
 
-                                <div class="mt-6 p-4 bg-blue-50 rounded-xl">
-                                    <p class="text-sm text-gray-600 text-center">
-                                        💡 Börja skriva så får du adressförslag från Google Maps
+                                <div class="info-box">
+                                    <p class="text-sm text-gray-700">
+                                        💡 <strong>Tips:</strong> Vi har fasta priser mellan många populära destinationer som Flen, Stockholm, Arlanda och mer!
                                     </p>
                                 </div>
                             </div>
